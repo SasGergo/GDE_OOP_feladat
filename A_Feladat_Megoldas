@@ -53,24 +53,24 @@ class Autokolcsonzo:
         self.autok.append(auto)
 
     def auto_berel(self, rendszam, datum):
-        # Ellenőrizzük, hogy a dátum érvényes-e (jövőbeni vagy mai dátum)
+        # Dátum érvényességének ellenőrzése (jövőbeni vagy mai dátum)
         if datum.date() < datetime.now().date():
             print("Hiba: Csak jövőbeni vagy mai dátumra lehet bérelni!")
             return None
 
-        # Megkeressük az autót
+        # Autó megkeresése
         auto = next((a for a in self.autok if a.rendszam == rendszam), None)
         if not auto:
             print("Hiba: Nem található ilyen rendszámú autó!")
             return None
 
-        # Ellenőrizzük, hogy az autó szabad-e az adott napon
+        # Szabad az autó?
         for berles in self.berlesek:
             if berles.auto.rendszam == rendszam and berles.datum.date() == datum.date():
                 print("Hiba: Az autó már foglalt ezen a napon!")
                 return None
 
-        # Létrehozzuk a bérlést
+        # Bérlés létrehozása
         uj_berles = Berles(auto, datum)
         self.berlesek.append(uj_berles)
         print(f"Sikeres bérlés! Ár: {auto.berleti_dij} Ft")
@@ -143,7 +143,7 @@ def felhasznaloi_interfesz():
             kolcsonzo.szabad_autok_listaz()
 
             rendszam = input("Adja meg a kívánt autó rendszámát: ").strip().upper()
-            datum_str = input("Adja meg a bérlés dátumát (ÉÉÉÉ-HH-NN, bérlési napok száma(hagyja üresen, ha csak mára bérli ki)): ").strip()
+            datum_str = input("Adja meg a bérlés dátumát (ÉÉÉÉ-HH-NN, hagyja üresen, ha a mai napra szeretné kibérelni): ").strip()
 
             try:
                 datum = datetime.strptime(datum_str, "%Y-%m-%d") if datum_str else datetime.now()
@@ -166,18 +166,18 @@ def felhasznaloi_interfesz():
                 else:
                     print("Érvénytelen sorszám!")
             except ValueError:
-                print("Hibás bemenet! Csak számot adjon meg.")
+                print("Hiba! Csak számot adjon meg!")
 
         elif valasztas == "3":
             kolcsonzo.berlesek_listaz()
 
         elif valasztas == "4":
-            datum_str = input("Adja meg a dátumot (ÉÉÉÉ-HH-NN, üresen hagyva ma): ").strip()
+            datum_str = input("Adja meg a dátumot (ÉÉÉÉ-HH-NN, hagyja üresen, ha a mai napra szeretné kibérelni): ").strip()
             try:
                 datum = datetime.strptime(datum_str, "%Y-%m-%d") if datum_str else datetime.now()
                 kolcsonzo.szabad_autok_listaz(datum)
             except ValueError:
-                print("Hibás dátumformátum! Használja az ÉÉÉÉ-HH-NN formátumot.")
+                print("Hibás dátumformátum! Használja az ÉÉÉÉ-HH-NN formátumot!")
 
         elif valasztas == "5":
             print("Kilépés...")
